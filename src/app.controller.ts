@@ -1,7 +1,9 @@
 import { Controller, Get, Query } from '@nestjs/common';
+import { AppService } from './app.service';
 
 @Controller()
 export class AppController {
+  constructor(private readonly weatherService: AppService) {}
   @Get('/')
   getIndex(): string {
     return `
@@ -25,7 +27,8 @@ export class AppController {
 
 
   @Get('/weather')
-  getWeather(@Query('city') city: string): string {
+  async getWeather(@Query('city') city: string): Promise<string> {
+    var weatherdata = await this.weatherService.getWeatherByCity(city);
     if (!city) {
       return `
         <html>
@@ -43,7 +46,7 @@ export class AppController {
     return `
       <html>
         <body>
-          <h2>${city}</h2>
+          <h2>${weatherdata.temperature}</h2>
           <button id="back" onclick="backhome()">Check another City/s Weather</button> 
           <script>
               function backhome(){
